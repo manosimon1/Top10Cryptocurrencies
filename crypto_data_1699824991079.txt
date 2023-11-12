@@ -1,0 +1,11 @@
+Top 10 Cryptocurrencies:
+Bitcoin: $37175
+Ethereum: $2061.53
+Tether: $1.001
+BNB: $248.75
+XRP: $0.666279
+USDC: $1
+Solana: $56.95
+Lido Staked Ether: $2055.4
+Cardano: $0.386646
+Dogecoin: $0.07851
