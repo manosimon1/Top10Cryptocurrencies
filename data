@@ -6,19 +6,21 @@ async function fetchCryptoData() {
 
   if (response.ok) {
     const data = await response.json();
-    const content = `Top 10 Cryptocurrencies:\n${data.map(crypto => `${crypto.name}: $${crypto.current_price}`).join('\n')}`;
+    const currentTime = new Date().toLocaleString();
+    const content = `Top 10 Cryptocurrencies (${currentTime}):\n${data.map(crypto => `${crypto.name}: $${crypto.current_price}`).join('\n')}`;
 
-    return content;
+    return { content, currentTime };
   } else {
     throw new Error('Failed to fetch data from CoinGecko');
   }
 }
 
-async function pushToGitHub(content, token, username, repository) {
+async function pushToGitHub(content, token, username, repository, currentTime) {
   const octokit = new Octokit({ auth: token });
   const owner = username;
   const repo = repository;
   const branch = 'main';
+  const date = currentTime.replace(/[,:]/g, '').split(' ').join('_');
 
   const contentEncoded = Buffer.from(content).toString('base64');
 
@@ -26,8 +28,8 @@ async function pushToGitHub(content, token, username, repository) {
     const file = await octokit.repos.createOrUpdateFileContents({
       owner,
       repo,
-      path: `crypto_data_${Date.now()}.txt`,
-      message: 'Daily Crypto Data Update',
+      path: `crypto_data_${date}.txt`,
+      message: `Daily Crypto Data Update at ${currentTime}`,
       content: contentEncoded,
       branch,
     });
@@ -40,8 +42,8 @@ async function pushToGitHub(content, token, username, repository) {
 
 async function performDailyActivity(token, username, repository) {
   try {
-    const cryptoContent = await fetchCryptoData();
-    await pushToGitHub(cryptoContent, token, username, repository);
+    const { content, currentTime } = await fetchCryptoData();
+    await pushToGitHub(content, token, username, repository, currentTime);
   } catch (error) {
     console.error('Error during daily activity:', error);
   }
@@ -49,18 +51,17 @@ async function performDailyActivity(token, username, repository) {
 
 async function main() {
   const gitTokens = [
-    '-',
-    'YOUR_GITHUB_TOKEN_2',
+    'YOUR_GITHUB_TOKEN_1',
     // Add other tokens if needed
   ];
 
-  const username = '-';
-  const repository = '-';
+  const username = 'your_username';
+  const repository = 'your_repository';
 
-  // Run the daily activity for each GitHub token
-  for (let index = 0; index < gitTokens.length; index++) {
-    console.log(`Running daily activity with token ${index + 1}...`);
-    await performDailyActivity(gitTokens[index], username, repository);
+  for (const token of gitTokens) {
+    const index = gitTokens.indexOf(token) + 1;
+    console.log(`Running daily activity with token ${index}...`);
+    await performDailyActivity(token, username, repository);
   }
 }
 
