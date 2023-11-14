@@ -51,30 +51,19 @@ async function performDailyActivity(token, username, repository) {
     const { content, currentTime } = await fetchCryptoData();
     await pushToGitHub(content, token, username, repository, currentTime);
   } catch (error) {
-    console.error('Error during daily activity:');
-    if (error.response) {
-      // The request was made and the server responded with a status code
-      console.error('Response Error:', error.response.data);
-      console.error('Status Code:', error.response.status);
-    } else if (error.request) {
-      // The request was made but no response was received
-      console.error('Request Error:', error.request);
-    } else {
-      // Something happened in setting up the request that triggered an Error
-      console.error('General Error:', error.message);
-    }
-    // Handle or log the error as needed
+    console.error('Error during daily activity:', error);
+    throw error;
   }
 }
 
 async function main() {
   const gitTokens = [
-    'token',
+    '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',
     // Add other tokens if needed
   ];
 
-  const username = 'name';
-  const repository = 'repo';
+  const username = 'manosimon1';
+  const repository = 'Top10Cryptocurrencies';
 
   for (const token of gitTokens) {
     const index = gitTokens.indexOf(token) + 1;
