@@ -58,11 +58,11 @@ async function performDailyActivity(token, username, repository) {
 
 async function main() {
   const gitTokens = [
-    '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',
+    'token',
     // Add other tokens if needed
   ];
 
-  const username = 'manosimon1';
+  const username = 'name';
   const repository = 'Top10Cryptocurrencies';
 
   for (const token of gitTokens) {
