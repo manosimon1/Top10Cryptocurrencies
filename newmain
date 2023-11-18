@@ -13,7 +13,7 @@ async function fetchCryptoData() {
 
       return { content, currentTime };
     } else {
-      throw new Error(`Failed to fetch data from CoinGecko. Status: ${response.status}`);
+      throw new Error('Failed to fetch data from CoinGecko');
     }
   } catch (error) {
     console.error('Error in fetchCryptoData:', error);
@@ -23,7 +23,6 @@ async function fetchCryptoData() {
 
 async function pushToGitHub(content, token, username, repository, currentTime) {
   try {
-    console.log('Pushing data to GitHub...');
     const octokit = new Octokit({ auth: token });
     const owner = username;
     const repo = repository;
@@ -48,36 +47,41 @@ async function pushToGitHub(content, token, username, repository, currentTime) {
   }
 }
 
-async function performDailyActivity(token, username, repository) {
+async function performDailyActivity() {
   try {
-    const { content, currentTime } = await fetchCryptoData();
-    console.log('Fetched crypto data:', content);
-    
-    await pushToGitHub(content, token, username, repository, currentTime);
+    const gitTokens = [
+      'token',
+      // Add other tokens if needed
+    ];
+
+    const username = 'name';
+    const repository = 'project';
+
+    for (const token of gitTokens) {
+      const index = gitTokens.indexOf(token) + 1;
+      console.log(`Running daily activity with token ${index}...`);
+      try {
+        const { content, currentTime } = await fetchCryptoData();
+        console.log('Fetched crypto data:', content);
+
+        await pushToGitHub(content, token, username, repository, currentTime);
+      } catch (error) {
+        console.error('Error during daily activity:', error);
+        // Handle or log the error as needed
+      }
+    }
   } catch (error) {
-    console.error('Error during daily activity:', error);
+    console.error('Error in performDailyActivity:', error);
     throw error;
   }
 }
 
 async function main() {
-  const gitTokens = [
-    'token',
-    // Add other tokens if needed
-  ];
-
-  const username = 'name';
-  const repository = 'project';
-
-  for (const token of gitTokens) {
-    const index = gitTokens.indexOf(token) + 1;
-    console.log(`Running daily activity with token ${index}...`);
-    try {
-      await performDailyActivity(token, username, repository);
-    } catch (error) {
-      console.error('Error during daily activity:', error);
-      // Handle or log the error as needed
-    }
+  try {
+    await performDailyActivity();
+  } catch (error) {
+    console.error('Error in main:', error);
+    // Handle or log the error as needed
   }
 }
 
