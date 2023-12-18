@@ -8,10 +8,14 @@ async function fetchCryptoData() {
 
     if (response.ok) {
       const data = await response.json();
-      const currentTime = new Date().toLocaleString();
-      const content = `Top 10 Cryptocurrencies (${currentTime}):\n${data.map(crypto => `${crypto.name}: $${crypto.current_price}`).join('\n')}`;
 
-      return { content, currentTime };
+      if (data && Array.isArray(data)) {
+        const currentTime = new Date().toLocaleString();
+        const content = `Top 10 Cryptocurrencies (${currentTime}):\n${data.map(crypto => `${crypto.name}: $${crypto.current_price}`).join('\n')}`;
+        return { content, currentTime };
+      } else {
+        throw new Error('Invalid data received from CoinGecko');
+      }
     } else {
       throw new Error('Failed to fetch data from CoinGecko');
     }
@@ -51,11 +55,10 @@ async function performDailyActivity() {
   try {
     const gitTokens = [
       'token',
-      // Add other tokens if needed
     ];
 
-    const username = 'name';
-    const repository = 'project';
+    const username = 'manosimon1';
+    const repository = 'Top10Cryptocurrencies';
 
     for (const token of gitTokens) {
       const index = gitTokens.indexOf(token) + 1;
@@ -67,7 +70,6 @@ async function performDailyActivity() {
         await pushToGitHub(content, token, username, repository, currentTime);
       } catch (error) {
         console.error('Error during daily activity:', error);
-        // Handle or log the error as needed
       }
     }
   } catch (error) {
